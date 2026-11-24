@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentForge · Multi-Agent Software Engineering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5fb;--panel:#fff;--ink:#16203a;--mute:#5d6985;--line:#dde3f0;--acc:#3b5bdb;--acc2:#e8edff;--ok:#12805c;--bad:#c92a2a;--code:#0f172a;--codeink:#dbe4ff}
+:root[data-theme=dark]{--bg:#0c1222;--panel:#141d34;--ink:#e6ebf7;--mute:#93a0c0;--line:#243152;--acc:#7c9bff;--acc2:#1c2850;--ok:#4fd1a0;--bad:#ff7b7b;--code:#0a0f1d;--codeink:#cfd9f5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 'IBM Plex Sans',system-ui,sans-serif}
+h1,h2,h3{font-family:'Bricolage Grotesque','IBM Plex Sans',sans-serif;margin:0}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 32px;border-bottom:1px solid var(--line)}
+.brand{font:800 22px 'Bricolage Grotesque',sans-serif;letter-spacing:-.5px}.brand small{font:400 13px 'IBM Plex Sans';color:var(--mute);margin-left:10px}
+button{font:inherit;cursor:pointer}
+.ghost{background:none;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:6px 12px}
+main{display:grid;grid-template-columns:380px 1fr;gap:28px;padding:28px 32px;max-width:1280px;margin:auto}
+@media(max-width:900px){main{grid-template-columns:1fr;padding:18px}header{padding:14px 18px}}
+.side{position:sticky;top:20px;align-self:start;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
+.side h2{font-size:24px;line-height:1.2;margin-bottom:8px}.side p{color:var(--mute);margin:0 0 16px}
+textarea{width:100%;height:150px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--bg);color:var(--ink);font:inherit}
+textarea:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px}
+.chip{background:var(--acc2);color:var(--acc);border:0;border-radius:99px;padding:5px 12px;font-size:13px}
+.run{width:100%;background:var(--acc);color:#fff;border:0;border-radius:10px;padding:13px;font-weight:500;font-size:16px}
+:root[data-theme=dark] .run{color:#0c1222}.run:disabled{opacity:.55;cursor:wait}
+.err{display:none;margin-top:14px;color:var(--bad);border:1px solid var(--bad);border-radius:10px;padding:10px 12px;font-size:14px}
+.rail{position:relative;display:flex;flex-direction:column;gap:14px}
+.rail:before{content:"";position:absolute;left:21px;top:20px;bottom:20px;width:2px;background:var(--line)}
+.card{position:relative;margin-left:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.head{display:flex;align-items:center;gap:14px;padding:12px 16px;cursor:pointer;user-select:none}
+.dot{z-index:1;flex:none;width:12px;height:12px;border-radius:50%;background:var(--line);margin:0 9px;box-shadow:0 0 0 4px var(--panel)}
+.head b{font:700 16px 'Bricolage Grotesque'}.head span.d{color:var(--mute);font-size:13px;flex:1}
+.tag{font-size:12px;color:var(--mute)}
+.card.running .dot{background:var(--acc);animation:p 1s infinite}.card.running{border-color:var(--acc)}
+.card.done .dot{background:var(--ok)}.card.fail .dot{background:var(--bad)}.card.fail .tag{color:var(--bad)}.card.done .tag{color:var(--ok)}
+@keyframes p{50%{box-shadow:0 0 0 4px var(--panel),0 0 0 8px var(--acc2)}}
+@media(prefers-reduced-motion:reduce){.card.running .dot{animation:none}}
+.body{display:none;padding:2px 20px 18px 52px;border-top:1px solid var(--line)}.card.open .body{display:block}
+.body h4{margin:14px 0 4px;font:700 15px 'Bricolage Grotesque'}.body p,.body li{margin:4px 0}.body ul{padding-left:20px;margin:6px 0}
+pre{background:var(--code);color:var(--codeink);padding:14px;border-radius:10px;overflow:auto;font:13px/1.5 'JetBrains Mono',monospace;margin:10px 0}
+code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--acc2);padding:1px 5px;border-radius:4px}pre code{background:none;padding:0}
+.final{display:none;background:var(--panel);border:2px solid var(--ok);border-radius:14px;padding:20px}
+.final.bad{border-color:var(--bad)}.final h3{font-size:22px;margin-bottom:4px}
+.tabs{display:flex;gap:6px;margin:14px 0 0}.tabs button{border:0;background:none;color:var(--mute);padding:6px 12px;border-radius:8px}.tabs .on{background:var(--acc2);color:var(--acc)}
+.acts{display:flex;gap:8px;margin-top:6px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">AgentForge<small>LLM multi-agent software engineering</small></div>
+  <button class="ghost" id="theme" aria-label="Toggle theme">Dark mode</button>
+</header>
+<main>
+  <section class="side">
+    <h2>Describe what to build</h2>
+    <p>Six agents turn your idea into requirements, code, a review, tests and docs. Failing tests are sent back for repair.</p>
+    <textarea id="task" placeholder="e.g. A library system module to add books, issue and return them, and calculate late fees"></textarea>
+    <div class="chips" id="chips"></div>
+    <button class="run" id="run">Build with agents</button>
+    <div class="err" id="err"></div>
+  </section>
+  <section>
+    <div class="rail" id="rail"></div>
+    <div class="final" id="final">
+      <h3 id="ftitle"></h3><div style="color:var(--mute)" id="fsub"></div>
+      <div class="tabs" id="tabs"></div>
+      <div id="fview"></div>
+      <div class="acts"><button class="ghost" id="copy">Copy</button><button class="ghost" id="dl">Download</button></div>
+    </div>
+  </section>
+</main>
+<script>
+const AGENTS=[["requirements","Requirements agent","Writes user stories and acceptance criteria"],
+["programmer","Programmer agent","Generates the Python implementation"],
+["reviewer","Static review agent","Audits the code without running it"],
+["tester","Test agent","Writes unit tests"],
+["executor","Test runner","Executes the tests and returns the output"],
+["debugger","Debug agent","Repairs the code when tests fail"],
+["docs","Documentation agent","Documents the final code"],
+["demo","Run-guide agent","Writes demo.py and the steps to run everything"]];
+const EX=["Library system: add books, issue, return, late fee","Bank account with deposit, withdraw and transaction history","Password strength checker with scoring","Todo manager with priorities and due dates"];
+const $=id=>document.getElementById(id);let final=null,tab="guide";
+const root=document.documentElement;
+function setTheme(t){root.dataset.theme=t;$("theme").textContent=t=="dark"?"Light mode":"Dark mode"}
+setTheme(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
+$("theme").onclick=()=>setTheme(root.dataset.theme=="dark"?"light":"dark");
+EX.forEach(t=>{const b=document.createElement("button");b.className="chip";b.textContent=t.split(":")[0];b.onclick=()=>$("task").value=t;$("chips").append(b)});
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function md(s){
+  const parts=s.split(/```[a-z]*\n?/);let out="";
+  parts.forEach((p,i)=>{
+    if(i%2){out+="<pre><code>"+esc(p.replace(/\n$/,""))+"</code></pre>";return}
+    let l=esc(p).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/`([^`]+)`/g,"<code>$1</code>").split("\n"),h="",ul=false;
+    l.forEach(x=>{
+      const li=x.match(/^\s*(?:[-*]|\d+\.)\s+(.*)/),hd=x.match(/^#{1,4}\s+(.*)/);
+      if(li){if(!ul){h+="<ul>";ul=true}h+="<li>"+li[1]+"</li>";return}
+      if(ul){h+="</ul>";ul=false}
+      if(hd)h+="<h4>"+hd[1]+"</h4>";else if(x.trim())h+="<p>"+x+"</p>";
+    });if(ul)h+="</ul>";out+=h;
+  });return out;
+}
+function build(){
+  $("rail").innerHTML="";
+  AGENTS.forEach(([id,n,d])=>{
+    const c=document.createElement("div");c.className="card";c.id="c-"+id;
+    c.innerHTML=`<div class="head"><i class="dot"></i><div><b>${n}</b></div><span class="d">${d}</span><span class="tag">waiting</span></div><div class="body"></div>`;
+    c.querySelector(".head").onclick=()=>c.classList.toggle("open");$("rail").append(c);
+  });
+}
+function upd(e){
+  const c=$("c-"+e.agent);if(!c)return;
+  c.classList.remove("running","done","fail");c.classList.add(e.status);
+  c.querySelector(".tag").textContent={running:"working…",done:"done",fail:"failed"}[e.status]||"";
+  if(e.content){const b=c.querySelector(".body"),h=md(e.content);
+    if(e.append)b.insertAdjacentHTML("beforeend",h);else b.innerHTML=h;c.classList.add("open")}
+  if(e.agent=="debugger"&&e.status=="running")c.classList.add("open");
+}
+function showFinal(){
+  const f=$("final");f.style.display="block";f.classList.toggle("bad",!final.passed);
+  $("ftitle").textContent=final.passed?"Build finished: all tests passed":"Build finished: some tests still fail";
+  $("fsub").textContent=final.passed?"The generated code was verified by running its tests.":"Max repair rounds reached. Review the test output above.";
+  $("tabs").innerHTML="";
+  [["guide","How to run"],["code","Code"],["tests","Tests"],["demo","Demo"],["docs","Docs"]].forEach(([k,n])=>{
+    const b=document.createElement("button");b.textContent=n;b.className=k==tab?"on":"";
+    b.onclick=()=>{tab=k;showFinal()};$("tabs").append(b)});
+  $("fview").innerHTML=(tab=="docs"||tab=="guide")?md(final[tab]):"<pre><code>"+esc(final[tab])+"</code></pre>";
+  f.scrollIntoView({behavior:"smooth"});
+}
+$("copy").onclick=()=>navigator.clipboard.writeText(final[tab]);
+$("dl").onclick=()=>{const n={code:"solution.py",tests:"test_solution.py",demo:"demo.py",docs:"DOCS.md",guide:"HOW_TO_RUN.md"}[tab];
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([final[tab]]));a.download=n;a.click()};
+$("run").onclick=async()=>{
+  const task=$("task").value.trim(),err=$("err");err.style.display="none";
+  if(!task){err.textContent="Describe the project first.";err.style.display="block";return}
+  build();$("final").style.display="none";$("run").disabled=true;$("run").textContent="Agents are working…";
+  try{
+    const r=await fetch("/api/run",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({task})});
+    if(!r.ok)throw new Error((await r.json()).error||"Server error");
+    const rd=r.body.getReader(),dec=new TextDecoder();let buf="";
+    for(;;){const {done,value}=await rd.read();if(done)break;
+      buf+=dec.decode(value,{stream:true});const lines=buf.split("\n");buf=lines.pop();
+      for(const l of lines){if(!l.trim())continue;const e=JSON.parse(l);
+        if(e.agent=="error")throw new Error(e.content);
+        if(e.agent=="final"){final=e;tab="guide";showFinal()}else upd(e)}}
+  }catch(x){err.textContent=x.message;err.style.display="block"}
+  $("run").disabled=false;$("run").textContent="Build with agents";
+};
+build();
+</script>
+</body>
+</html>
